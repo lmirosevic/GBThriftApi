@@ -1,3 +1,0 @@
-[submodule "thrift"]
-	path = thrift
-	url = git@github.com:lmirosevic/Goonbee-Thrift-Shared.git
