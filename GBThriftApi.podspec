@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                  = 'GBThriftApi'
-  s.version               = '0.1.2'
+  s.version               = '0.1.3'
   s.summary               = 'A small library to make thrift a little more palatable in Objective-C on iOS and OS X.'
   s.homepage              = 'https://github.com/lmirosevic/GBThriftApi'
   s.license               = { type: 'Apache License, Version 2.0', file: 'LICENSE' }
