@@ -9,9 +9,14 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '5.0'
   s.osx.deployment_target = '10.7'
   s.requires_arc          = true
-  s.source_files          = 'GBThriftApi.{h,m}', 'thrift/gen-cocoa/GoonbeeShared.{h,m}'
+  s.source_files          = 'GBThriftApi.{h,m}'
   s.public_header_files   = 'GBThriftApi.h'
 
   s.dependency 'GBToolbox'
   s.dependency 'thrift', '~> 0.9'
+
+  s.subspec 'GBThriftShared' do |sp|
+    sp.source_files        = 'thrift/gen-cocoa/GoonbeeShared.{h,m}'
+    sp.public_header_files = 'thrift/gen-cocoa/GoonbeeShared.h'
+  end
 end
