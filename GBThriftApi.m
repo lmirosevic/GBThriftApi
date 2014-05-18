@@ -8,12 +8,12 @@
 
 #import "GBThriftApi.h"
 
-#import <malloc/malloc.h>
-
 #import <thrift/TSocketClient.h>
 #import <thrift/TBinaryProtocol.h>
 #import <thrift/TTransportException.h>
 #import <GBToolbox/GBToolbox.h>
+
+#import <malloc/malloc.h>
 
 typedef NS_ENUM(NSInteger, CallTechnicalStatus) {
     CallTechnicalStatusSuccess,
@@ -55,10 +55,10 @@ typedef NS_ENUM(NSInteger, CallTechnicalStatus) {
 #pragma mark - Mem
 
 +(instancetype)sharedApi {
-    static GBChat *sharedInstance = nil;
+    static id sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedInstance = [GBChat new];
+        sharedInstance = [self new];
     });
     return sharedInstance;
 }
