@@ -15,6 +15,8 @@
 
 #import <malloc/malloc.h>
 
+#import "GoonbeeShared.h"
+
 typedef NS_ENUM(NSInteger, CallTechnicalStatus) {
     CallTechnicalStatusSuccess,
     CallTechnicalStatusRecoverableError,

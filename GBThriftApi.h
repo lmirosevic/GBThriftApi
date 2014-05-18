@@ -8,10 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-// The following line requires the Goonbee Shared Thrift service. This library goes hand in hand with the this shared service as it provides common error handling for calls used by this library. You should write a library for your service/API and in the trift IDL include the "Goonbee Thrift Shared" (https://github.com/lmirosevic/Goonbee-Thrift-Shared) library, then when building your own library for your service, make sure to include, compile and link your project against the GoonbeeShared.{h,m} files. See GBChat for an example (https://github.com/lmirosevic/GBChat).
-#import "GoonbeeShared.h"
-
-typedef void(^GBThriftCallCompletionBlock)(enum GBSharedResponseStatus status, id result, BOOL cancelled);
+typedef void(^GBThriftCallCompletionBlock)(int status, id result, BOOL cancelled);
 
 @interface GBThriftApi : NSObject
 
@@ -38,3 +35,7 @@ typedef void(^GBThriftCallCompletionBlock)(enum GBSharedResponseStatus status, i
 +(Class)thriftServiceClass;
 
 @end
+
+
+//lm need automatic reconnection to server if something goes wrong, with request queing and backoff
+//lm need to implement cancellation
