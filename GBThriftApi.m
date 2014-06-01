@@ -72,7 +72,7 @@ typedef NS_ENUM(NSInteger, CallTechnicalStatus) {
 #pragma mark - Plumbing
 
 -(void)_connect {
-    TSocketClient *transport = [[TSocketClient alloc] initWithHostname:self.serverUrl port:self.serverPort];
+    TSocketClient *transport = [[TSocketClient alloc] initWithHostname:self.serverUrl port:(int)self.serverPort];
     TBinaryProtocol *protocol = [[TBinaryProtocol alloc] initWithTransport:transport strictRead:YES strictWrite:YES];
     self.server = [[[self.class thriftServiceClass] alloc] initWithProtocol:protocol];
 }
