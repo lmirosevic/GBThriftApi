@@ -50,6 +50,8 @@ typedef NS_ENUM(NSInteger, CallTechnicalStatus) {
 @property (copy, nonatomic) NSString                                *serverUrl;
 @property (assign, nonatomic) NSUInteger                            serverPort;
 
+@property (assign, nonatomic) dispatch_queue_t                      queue;
+
 @end
 
 @implementation GBThriftApi : NSObject
@@ -63,6 +65,18 @@ typedef NS_ENUM(NSInteger, CallTechnicalStatus) {
         sharedInstance = [self new];
     });
     return sharedInstance;
+}
+
+-(id)init {
+    if (self = [super init]) {
+        self.queue = dispatch_queue_create("GBThriftApi Queue", DISPATCH_QUEUE_SERIAL);
+    }
+    
+    return self;
+}
+
+-(void)dealloc {
+    dispatch_release(self.queue);
 }
 
 +(Class)thriftServiceClass {
@@ -223,45 +237,51 @@ typedef NS_ENUM(NSInteger, CallTechnicalStatus) {
     NSInvocation *invocation = [NSInvocation invocationWithTarget:self.server selector:selector argument:argument argumentList:argumentList];
     va_end(argumentList);
     
-    // invoke and process the invocation
-    GBThriftCallInvocationResult *invocationResult = [self _invokeAndProcessInvocation:invocation];
-    
-    switch (invocationResult.technicalStatus) {
-        case CallTechnicalStatusSuccess:
-        case CallTechnicalStatusNonRecoverableError: {
-            // any specific processing to do for application level response statuses
-            switch (invocationResult.responseStatus) {
-                case ResponseStatus_SUCCESS: {
+    // -> bg
+    dispatch_async(self.queue, ^{
+        // invoke and process the invocation
+        GBThriftCallInvocationResult *invocationResult = [self _invokeAndProcessInvocation:invocation];
+
+        // -> fg
+        dispatch_async(dispatch_get_main_queue(), ^{
+            switch (invocationResult.technicalStatus) {
+                case CallTechnicalStatusSuccess:
+                case CallTechnicalStatusNonRecoverableError: {
+                    // any specific processing to do for application level response statuses
+                    switch (invocationResult.responseStatus) {
+                        case ResponseStatus_SUCCESS: {
+                        } break;
+                            
+                        case ResponseStatus_GENERIC: {
+                        } break;
+                            
+                        case ResponseStatus_MALFORMED_REQUEST: {
+                        } break;
+                            
+                        case ResponseStatus_AUTHENTICATION: {
+                        } break;
+                            
+                        case ResponseStatus_AUTHORIZATION: {
+                        } break;
+                            
+                        case ResponseStatus_PHASED_OUT: {
+                        } break;
+                    }
+                    
+                    // call callback block
+                    if (block) block(invocationResult.responseStatus, invocationResult.result, NO);
                 } break;
                     
-                case ResponseStatus_GENERIC: {
-                } break;
+                case CallTechnicalStatusRecoverableError: {
+                    // attempt recovery and replay the request a little bit later
+                    //lm TODO
                     
-                case ResponseStatus_MALFORMED_REQUEST: {
-                } break;
-                    
-                case ResponseStatus_AUTHENTICATION: {
-                } break;
-                    
-                case ResponseStatus_AUTHORIZATION: {
-                } break;
-                    
-                case ResponseStatus_PHASED_OUT: {
+                    //lm for now just do the simple thing and fail immediately
+                    if (block) block(invocationResult.responseStatus, invocationResult.result, NO);
                 } break;
             }
-            
-            // call callback block
-            if (block) block(invocationResult.responseStatus, invocationResult.result, NO);
-        } break;
-            
-        case CallTechnicalStatusRecoverableError: {
-            // attempt recovery and replay the request a little bit later
-            //lm TODO
-            
-            //lm for now just do the simple thing and fail immediately
-            if (block) block(invocationResult.responseStatus, invocationResult.result, NO);
-        } break;
-    }
+        });
+    });
 }
 
 @end
